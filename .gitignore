@@ -1,0 +1,22 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Python virtual environment
+# This directory contains all the project's dependencies.
+venv/
+.venv/
+
+# Environment variables
+# This file contains secrets and should never be committed.
+.env
+
+# Google Cloud Service Account credentials
+# This file contains secrets and should never be committed.
+authoritarian-timeline-557dd7207e46.json
+
+# OS-specific files
+.DS_Store
+Thumbs.db

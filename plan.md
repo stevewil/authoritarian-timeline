@@ -1,0 +1,5 @@
+I want to build a python-driven website that essentially will be a horizontal timeline. The timeline will actually be mulitple timelines stacked as ribbons on top of one another. Each ribbon will represent the time a particular leader took power, consolidated power, and then fell from power (if the latter has occurred, yet, for some contemporary leaders) and important markers through time will be placed on each leader's respective timeline so that leaders can be comared with one another through what they accomplished at a given point in time from the zero point when the officially assumed power (which will be determined for each leader.
+
+We want the backend to be a Google sheet for which we have API access. We will come up with a way to associate time with events that we will put the sheet.
+
+The front end will be handled by Netlify which will draw from a github repository.
