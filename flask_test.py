@@ -71,6 +71,6 @@ def get_timelines():
         return jsonify({"status": "error", "message": "An internal error occurred while fetching timeline data."}), 500
 
 if __name__ == '__main__':
-    # To run for local development: `python flask_test.py`
-    # Or if renamed: `python app.py`
+    # To run for local development, rename this file to 'app.py' and run:
+    # python app.py
     app.run(debug=True, port=8000)
