@@ -29,6 +29,13 @@ try:
     spreadsheet = gc.open(sheet_name)
     print(f"[{datetime.now()}] SUCCESS: Successfully opened spreadsheet '{spreadsheet.title}'")
 
+    # 3. Test reading from a worksheet
+    print(f"[{datetime.now()}] DEBUG: Attempting to open 'LEADERS' worksheet...")
+    leaders_sheet = spreadsheet.worksheet("LEADERS")
+    print(f"[{datetime.now()}] DEBUG: Successfully opened 'LEADERS' worksheet. Reading first row...")
+    first_row = leaders_sheet.row_values(1)
+    print(f"[{datetime.now()}] SUCCESS: Read first row: {first_row}")
+
 except Exception as e:
     print(f"\n--- AN ERROR OCCURRED ---")
     import traceback
