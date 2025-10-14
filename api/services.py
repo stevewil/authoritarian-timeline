@@ -48,16 +48,12 @@ def test_sheet_read(spreadsheet: gspread.Spreadsheet) -> str:
     test_worksheet = spreadsheet.worksheet("Test")
     return test_worksheet.acell("A1").value
 
-def get_timelines_data():
+def get_timelines_data(spreadsheet: gspread.Spreadsheet):
     """
     Fetches leader and event data from the Google Sheet and processes it
     into the required JSON structure for the API.
     """
     debug_log = ["Starting timeline data processing."]
-    
-    debug_log.append("Attempting to connect to Google Sheets...")
-    spreadsheet = get_sheet_connection()
-    debug_log.append(f"Connection to sheet '{SHEET_NAME}' successful.")
 
     # 1. Fetch all data from both sheets
     debug_log.append("Fetching 'Leaders' and 'Events' worksheets.")

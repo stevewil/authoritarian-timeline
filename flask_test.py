@@ -47,7 +47,11 @@ def test_read():
 def get_timelines():
     """Fetches and returns all processed leader and event data."""
     try:
-        response_data = get_timelines_data()
+        # Best practice: Get a new connection for each request to ensure freshness
+        # and handle potential connection drops gracefully.
+        spreadsheet = get_sheet_connection()
+        # Pass the connection to the data processing function.
+        response_data = get_timelines_data(spreadsheet)
         return jsonify(response_data), 200
     except Exception as e:
         # Log the full traceback to the console for detailed debugging
