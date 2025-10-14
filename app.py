@@ -5,9 +5,6 @@ from flask import Flask, jsonify
 import traceback
 import json
 
-# Add the project root to the Python path to ensure modules are found
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
-
 from api.services import get_sheet_connection, test_sheet_write, test_sheet_read, test_leaders_read, get_timelines_data
 
 app = Flask(__name__)
