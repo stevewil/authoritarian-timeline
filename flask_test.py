@@ -30,7 +30,10 @@ def test_write():
             "message": f"Successfully wrote to sheet. Value: '{timestamp}'"
         }), 200
     except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 500
+        print(f"--- ERROR IN /api/test-write ---")
+        traceback.print_exc()
+        print("--------------------------------")
+        return jsonify({"status": "error", "message": "An internal error occurred during test write."}), 500
 
 @app.route("/api/test-read", methods=['GET'])
 def test_read():
@@ -45,7 +48,10 @@ def test_read():
             "message": f"Successfully read from sheet. Value in A1: '{value}'"
         }), 200
     except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 500
+        print(f"--- ERROR IN /api/test-read ---")
+        traceback.print_exc()
+        print("-------------------------------")
+        return jsonify({"status": "error", "message": "An internal error occurred during test read."}), 500
 
 @app.route("/api/timelines", methods=['GET'])
 def get_timelines():
