@@ -20,8 +20,10 @@ def index():
 def test_write():
     """Tests writing a value to the Google Sheet."""
     try:
+        # Defer connection until the request is made
         spreadsheet = get_sheet_connection()
         timestamp = f"Flask write successful at: {datetime.datetime.utcnow().isoformat()}"
+        # Pass the connection to the service function
         test_sheet_write(spreadsheet, timestamp)
         return jsonify({
             "status": "success",
@@ -34,7 +36,9 @@ def test_write():
 def test_read():
     """Tests reading a value from the Google Sheet."""
     try:
+        # Defer connection until the request is made
         spreadsheet = get_sheet_connection()
+        # Pass the connection to the service function
         value = test_sheet_read(spreadsheet)
         return jsonify({
             "status": "success",
