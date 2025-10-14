@@ -39,15 +39,21 @@ def get_timelines_data():
     Fetches leader and event data from the Google Sheet and processes it
     into the required JSON structure for the API.
     """
+    print("DEBUG: Attempting to connect to Google Sheets...")
     spreadsheet = get_sheet_connection()
+    print("DEBUG: Connection successful.")
 
     # 1. Fetch all data from both sheets
+    print("DEBUG: Fetching 'Leaders' worksheet...")
     leaders_sheet = spreadsheet.worksheet("Leaders")
+    print("DEBUG: Fetching 'Events' worksheet...")
     events_sheet = spreadsheet.worksheet("Events")
     
+    print("DEBUG: Reading all records from sheets...")
     leaders_data = leaders_sheet.get_all_records() # Returns a list of dicts
     events_data = events_sheet.get_all_records()   # Returns a list of dicts
-
+    print(f"DEBUG: Found {len(leaders_data)} leaders and {len(events_data)} events.")
+    
     # 2. Process events and group them by LeaderID for efficient lookup
     events_by_leader = {}
     for event in events_data:
@@ -60,6 +66,7 @@ def get_timelines_data():
         
         events_by_leader[leader_id].append(event)
 
+    print("DEBUG: Starting to build final response structure...")
     # 3. Build the final response structure
     timelines = []
     for leader in leaders_data:
@@ -103,4 +110,5 @@ def get_timelines_data():
             "events": sorted(leader_events, key=lambda x: x['days_from_start'])
         })
 
+    print("DEBUG: Finished processing. Returning timelines.")
     return timelines

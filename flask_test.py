@@ -2,6 +2,7 @@ import datetime
 import sys
 import os
 from flask import Flask, jsonify
+import traceback
 
 # Add the project root to the Python path to ensure modules are found
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
@@ -49,8 +50,10 @@ def get_timelines():
         timelines_data = get_timelines_data()
         return jsonify(timelines_data), 200
     except Exception as e:
-        # Log the full error for debugging on the server
-        print(f"ERROR fetching timelines: {e}")
+        # Log the full traceback to the console for detailed debugging
+        print("--- AN ERROR OCCURRED ---")
+        traceback.print_exc()
+        print("-------------------------")
         return jsonify({"status": "error", "message": "An internal error occurred while fetching timeline data."}), 500
 
 if __name__ == '__main__':
