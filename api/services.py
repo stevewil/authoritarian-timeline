@@ -2,6 +2,7 @@ import gspread
 import os
 from dotenv import load_dotenv
 from datetime import datetime
+import threading
 
 # Load environment variables from .env file
 load_dotenv()
@@ -16,37 +17,50 @@ if not SHEET_NAME:
         "Please set it to the exact name of your Google Sheet."
     )
 
+# Global cache for the spreadsheet object to avoid reconnecting on every request.
+_spreadsheet_cache = None
+# A lock to ensure that only one thread tries to connect at a time.
+_connection_lock = threading.Lock()
+
 def get_sheet_connection():
     """
     Establishes a connection to the Google Sheet using service account credentials.
+    Uses a thread-safe singleton pattern to ensure the connection is only made once.
     """
-    # Explicitly get the path to the credentials file from the environment variable.
-    creds_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+    global _spreadsheet_cache
+    # Fast path: if the connection is already cached, return it immediately.
+    if _spreadsheet_cache:
+        return _spreadsheet_cache
 
-    # Provide a clear error if the environment variable is not set.
-    if not creds_path:
-        raise ValueError(
-            "The GOOGLE_APPLICATION_CREDENTIALS environment variable is not set. "
-            "Please check your .env file and ensure it points to your JSON credentials file."
-        )
+    # Slow path: acquire the lock to prevent other threads from connecting simultaneously.
+    with _connection_lock:
+        # Double-check if another thread connected while we were waiting for the lock.
+        if _spreadsheet_cache:
+            return _spreadsheet_cache
 
-    # Provide a clear error if the file path itself is wrong.
-    if not os.path.exists(creds_path):
-        raise FileNotFoundError(
-            f"The credentials file was not found at the path specified by "
-            f"GOOGLE_APPLICATION_CREDENTIALS: {creds_path}"
-        )
+        creds_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+        if not creds_path:
+            raise ValueError(
+                "The GOOGLE_APPLICATION_CREDENTIALS environment variable is not set. "
+                "Please check your .env file and ensure it points to your JSON credentials file."
+            )
+        if not os.path.exists(creds_path):
+            raise FileNotFoundError(
+                f"The credentials file was not found at the path specified by "
+                f"GOOGLE_APPLICATION_CREDENTIALS: {creds_path}"
+            )
 
-    gc = gspread.service_account(filename=creds_path)
+        print(f"[{datetime.now()}] DEBUG: Establishing new connection to Google Sheets...")
+        gc = gspread.service_account(filename=creds_path)
+        gc.http_client.timeout = 15
+        
+        print(f"[{datetime.now()}] DEBUG: Opening spreadsheet by name: '{SHEET_NAME}'...")
+        spreadsheet = gc.open(SHEET_NAME)
+        print(f"[{datetime.now()}] DEBUG: Connection successful. Caching for future use.")
 
-    # Set a timeout on the underlying HTTP client to prevent indefinite hangs.
-    # If a request takes longer than 15 seconds, it will raise an exception.
-    gc.http_client.timeout = 15
-    
-    print(f"[{datetime.now()}] DEBUG: Opening spreadsheet by name: '{SHEET_NAME}'...")
-    spreadsheet = gc.open(SHEET_NAME)
-    print(f"[{datetime.now()}] DEBUG: Spreadsheet opened successfully.")
-    return spreadsheet
+        _spreadsheet_cache = spreadsheet # Store the connection in the global cache
+
+        return spreadsheet
 
 def test_sheet_write(spreadsheet: gspread.Spreadsheet, value: str):
     """
@@ -69,7 +83,7 @@ def test_leaders_read(spreadsheet: gspread.Spreadsheet):
     """
     print(f"[{datetime.now()}] DEBUG [Service]: Fetching 'Leaders' worksheet...")
     # This is a network request to find the worksheet by name.
-    leaders_sheet = spreadsheet.worksheet("Leaders")
+    leaders_sheet = spreadsheet.worksheet("LEADERS")
     print(f"[{datetime.now()}] DEBUG [Service]: 'Leaders' worksheet object obtained successfully.")
     
     print(f"[{datetime.now()}] DEBUG [Service]: Reading all records from 'Leaders' sheet...")
@@ -88,12 +102,12 @@ def get_timelines_data(spreadsheet: gspread.Spreadsheet):
     # 1. Fetch all data from both sheets
     try:
         print(f"[{datetime.now()}] DEBUG: Fetching 'Leaders' worksheet...")
-        leaders_sheet = spreadsheet.worksheet("Leaders")
+        leaders_sheet = spreadsheet.worksheet("LEADERS")
         print(f"[{datetime.now()}] DEBUG: 'Leaders' worksheet fetched.")
         debug_log.append("Fetching 'Leaders' worksheet successful.")
         
         print(f"[{datetime.now()}] DEBUG: Fetching 'Events' worksheet...")
-        events_sheet = spreadsheet.worksheet("Events")
+        events_sheet = spreadsheet.worksheet("EVENTS")
         print(f"[{datetime.now()}] DEBUG: 'Events' worksheet fetched.")
         debug_log.append("Fetching 'Events' worksheet successful.")
     except gspread.exceptions.WorksheetNotFound as e:
