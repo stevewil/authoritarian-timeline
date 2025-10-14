@@ -27,16 +27,16 @@ The application consists of three main parts:
 
 1.  **Data Source**: A Google Sheet acts as a simple, collaborative database to store information about leaders and the key events in their timelines.
 2.  **Backend API**: A Python application built with **FastAPI** reads data from the Google Sheet, processes it into a structured JSON format, and serves it via a REST API.
-3.  **Frontend Client**: A static web page (HTML, CSS, JavaScript) that fetches the data from the backend API and uses a visualization library to render the interactive timelines.
+3.  **Frontend Client**: A static web page (HTML, CSS, JavaScript) that fetches data from the backend API and uses a visualization library to render the interactive timelines.
 
 ## Technology Stack
 
 | Component      | Technology                                                                                             |
 | -------------- | ------------------------------------------------------------------------------------------------------ |
 | **Backend**      | [Python 3.9+](https://www.python.org/), [FastAPI](https://fastapi.tiangolo.com/)                        |
+| **Backend**      | [Python 3.9+](https://www.python.org/), [Flask](https://flask.palletsprojects.com/)                     |
 | **Data Access**  | [GSpread](https://docs.gspread.org/en/latest/) (for Google Sheets API)                                   |
-| **Web Server**   | [Uvicorn](https://www.uvicorn.org/) (ASGI server for FastAPI)                                            |
-| **Data Validation**| [Pydantic](https://docs.pydantic.dev/) (Integrated with FastAPI)                                       |
+| **Web Server**   | [Flask Development Server](https://flask.palletsprojects.com/en/2.0.x/server/) / [Gunicorn](https://gunicorn.org/) (for production) |
 | **Data Source**  | [Google Sheets](https://www.google.com/sheets/about/)                                                  |
 | **Frontend**     | HTML5, CSS3, JavaScript. Visualization library TBD (e.g., [Vis.js](https://visjs.org/), [D3.js](https://d3js.org/), [Apache ECharts](https://echarts.apache.org/)) |
 | **Deployment**   | [Netlify](https://www.netlify.com/), [GitHub](https://github.com/)                                      |
@@ -51,10 +51,9 @@ The project will follow a standard structure for a modern web application with a
 ├── README.md
 ├── netlify.toml         # Netlify deployment and build configuration
 ├── requirements.txt     # Python dependencies
+├── app.py               # The main Flask application logic and endpoints
 │
 ├── api/
-│   ├── main.py          # The main FastAPI application logic and endpoints
-│   ├── schemas.py       # Pydantic models for data validation and serialization
 │   └── services.py      # Business logic for fetching/processing Google Sheet data
 │
 ├── .env.example         # Example environment variables file
@@ -161,12 +160,12 @@ cp .env.example .env
 
 ### 4. Running the Backend Server
 
-The FastAPI application is located in `api/main.py`. Run it with Uvicorn:
+The Flask application is in `app.py` (or `flask_test.py`). Run it directly with Python:
 
 ```bash
-# This command tells uvicorn to run the 'app' object from the 'api.main' module
-# --reload will automatically restart the server when you make code changes
-uvicorn api.main:app --reload
+# This command runs the Flask development server.
+# The server will automatically restart when you make code changes.
+python app.py
 ```
 
 The API will be available at `http://127.0.0.1:8000`. You can view the automatic interactive documentation at `http://127.0.0.1:8000/docs`.
