@@ -31,7 +31,10 @@ def get_sheet_connection():
         )
 
     gc = gspread.service_account(filename=creds_path)
+    
+    print(f"[{datetime.now()}] DEBUG: Opening spreadsheet by name: '{SHEET_NAME}'...")
     spreadsheet = gc.open(SHEET_NAME)
+    print(f"[{datetime.now()}] DEBUG: Spreadsheet opened successfully.")
     return spreadsheet
 
 def test_sheet_write(spreadsheet: gspread.Spreadsheet, value: str):
@@ -56,14 +59,22 @@ def get_timelines_data(spreadsheet: gspread.Spreadsheet):
     debug_log = ["Starting timeline data processing."]
 
     # 1. Fetch all data from both sheets
-    debug_log.append("Fetching 'Leaders' and 'Events' worksheets.")
+    print(f"[{datetime.now()}] DEBUG: Fetching 'Leaders' worksheet...")
     leaders_sheet = spreadsheet.worksheet("Leaders")
-    events_sheet = spreadsheet.worksheet("Events")
+    print(f"[{datetime.now()}] DEBUG: 'Leaders' worksheet fetched.")
+    debug_log.append("Fetching 'Leaders' worksheet successful.")
     
-    debug_log.append("Reading all records from sheets...")
+    print(f"[{datetime.now()}] DEBUG: Fetching 'Events' worksheet...")
+    events_sheet = spreadsheet.worksheet("Events")
+    print(f"[{datetime.now()}] DEBUG: 'Events' worksheet fetched.")
+    debug_log.append("Fetching 'Events' worksheet successful.")
+    
+    print(f"[{datetime.now()}] DEBUG: Reading all records from 'Leaders' sheet...")
     leaders_data = leaders_sheet.get_all_records() # Returns a list of dicts
+    print(f"[{datetime.now()}] DEBUG: Reading all records from 'Events' sheet...")
     events_data = events_sheet.get_all_records()   # Returns a list of dicts
-    debug_log.append(f"Found {len(leaders_data)} leaders and {len(events_data)} events.")
+    print(f"[{datetime.now()}] DEBUG: Finished reading all records.")
+    debug_log.append(f"Read {len(leaders_data)} leaders and {len(events_data)} events from sheets.")
     
     # 2. Process events and group them by LeaderID for efficient lookup
     events_by_leader = {}
