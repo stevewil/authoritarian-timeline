@@ -31,6 +31,10 @@ def get_sheet_connection():
         )
 
     gc = gspread.service_account(filename=creds_path)
+
+    # Set a timeout for all network requests to prevent indefinite hangs.
+    # If a request takes longer than 15 seconds, it will raise an exception.
+    gc.session.timeout = 15
     
     print(f"[{datetime.now()}] DEBUG: Opening spreadsheet by name: '{SHEET_NAME}'...")
     spreadsheet = gc.open(SHEET_NAME)
