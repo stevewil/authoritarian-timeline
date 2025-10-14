@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 from flask import Flask, jsonify
 import traceback
+import json
 
 # Add the project root to the Python path to ensure modules are found
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
@@ -66,7 +67,6 @@ def test_leaders():
         first_five_rows = test_leaders_read(spreadsheet)
         print(f"[{datetime.now()}] DEBUG [Route]: Service function returned successfully.")
         print("\n--- First 5 Leader Rows (Console Output) ---")
-        import json
         print(json.dumps(first_five_rows, indent=2)) # Pretty print for readability
         print("------------------------------------------\n")
         return jsonify(first_five_rows), 200
