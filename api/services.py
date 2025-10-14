@@ -34,7 +34,7 @@ def get_sheet_connection():
 
     # Set a timeout on the underlying HTTP client to prevent indefinite hangs.
     # If a request takes longer than 15 seconds, it will raise an exception.
-    gc._http_client.timeout = 15
+    gc.http_client.timeout = 15
     
     print(f"[{datetime.now()}] DEBUG: Opening spreadsheet by name: '{SHEET_NAME}'...")
     spreadsheet = gc.open(SHEET_NAME)
