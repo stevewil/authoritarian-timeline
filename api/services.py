@@ -60,9 +60,12 @@ def test_leaders_read(spreadsheet: gspread.Spreadsheet):
     Reads and returns the first five records from the 'Leaders' worksheet.
     """
     print(f"[{datetime.now()}] DEBUG: Fetching 'Leaders' worksheet for test read...")
-    leaders_sheet = spreadsheet.worksheet("Leaders")
+    leaders_sheet = spreadsheet.worksheet("Leaders") # This is a network request
+    print(f"[{datetime.now()}] DEBUG: 'Leaders' worksheet fetched. Now reading records...")
     # get_all_records() fetches all rows; we slice the first 5 records from the result.
-    return leaders_sheet.get_all_records()[:5]
+    records = leaders_sheet.get_all_records()[:5] # This is a network request
+    print(f"[{datetime.now()}] DEBUG: Successfully read {len(records)} records from 'Leaders' sheet.")
+    return records
 
 def get_timelines_data(spreadsheet: gspread.Spreadsheet):
     """
