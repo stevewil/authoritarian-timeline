@@ -63,16 +63,26 @@ def get_timelines_data(spreadsheet: gspread.Spreadsheet):
     debug_log = ["Starting timeline data processing."]
 
     # 1. Fetch all data from both sheets
-    print(f"[{datetime.now()}] DEBUG: Fetching 'Leaders' worksheet...")
-    leaders_sheet = spreadsheet.worksheet("Leaders")
-    print(f"[{datetime.now()}] DEBUG: 'Leaders' worksheet fetched.")
-    debug_log.append("Fetching 'Leaders' worksheet successful.")
-    
-    print(f"[{datetime.now()}] DEBUG: Fetching 'Events' worksheet...")
-    events_sheet = spreadsheet.worksheet("Events")
-    print(f"[{datetime.now()}] DEBUG: 'Events' worksheet fetched.")
-    debug_log.append("Fetching 'Events' worksheet successful.")
-    
+    try:
+        print(f"[{datetime.now()}] DEBUG: Fetching 'Leaders' worksheet...")
+        leaders_sheet = spreadsheet.worksheet("Leaders")
+        print(f"[{datetime.now()}] DEBUG: 'Leaders' worksheet fetched.")
+        debug_log.append("Fetching 'Leaders' worksheet successful.")
+        
+        print(f"[{datetime.now()}] DEBUG: Fetching 'Events' worksheet...")
+        events_sheet = spreadsheet.worksheet("Events")
+        print(f"[{datetime.now()}] DEBUG: 'Events' worksheet fetched.")
+        debug_log.append("Fetching 'Events' worksheet successful.")
+    except gspread.exceptions.WorksheetNotFound as e:
+        # This is a critical error, so we should stop and raise it.
+        # The flask route will catch this and return a 500 error.
+        error_msg = (
+            f"CRITICAL: A required worksheet was not found: {e}. "
+            "Please ensure your Google Sheet has worksheets named 'Leaders' and 'Events'."
+        )
+        debug_log.append(error_msg)
+        raise gspread.exceptions.WorksheetNotFound(error_msg) from e
+
     print(f"[{datetime.now()}] DEBUG: Reading all records from 'Leaders' sheet...")
     leaders_data = leaders_sheet.get_all_records() # Returns a list of dicts
     print(f"[{datetime.now()}] DEBUG: Reading all records from 'Events' sheet...")
