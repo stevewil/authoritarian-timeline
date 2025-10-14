@@ -6,7 +6,7 @@ from flask import Flask, jsonify
 # Add the project root to the Python path to ensure modules are found
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
-from api import services  # This import will now work reliably
+from api.services import get_sheet_connection, test_sheet_write, test_sheet_read
 
 app = Flask(__name__)
 
@@ -19,9 +19,9 @@ def index():
 def test_write():
     """Tests writing a value to the Google Sheet."""
     try:
-        spreadsheet = services.get_sheet_connection()
+        spreadsheet = get_sheet_connection()
         timestamp = f"Flask write successful at: {datetime.datetime.utcnow().isoformat()}"
-        services.test_sheet_write(spreadsheet, timestamp)
+        test_sheet_write(spreadsheet, timestamp)
         return jsonify({"status": "success", "message": f"Successfully wrote to sheet. Value: '{timestamp}'"}), 200
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
@@ -30,8 +30,8 @@ def test_write():
 def test_read():
     """Tests reading a value from the Google Sheet."""
     try:
-        spreadsheet = services.get_sheet_connection()
-        value = services.test_sheet_read(spreadsheet)
+        spreadsheet = get_sheet_connection()
+        value = test_sheet_read(spreadsheet)
         return jsonify({"status": "success", "message": f"Successfully read from sheet. Value in A1: '{value}'"}), 200
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
