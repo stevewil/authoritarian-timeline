@@ -1,4 +1,4 @@
-# hi, mom, again and again
+# hi, mom!!
 # Authoritarian Timeline Project
 
 This project is a web application designed to visualize and compare the timelines of various political leaders. It uses a Python backend to fetch data from a Google Sheet and presents it as a series of stacked, interactive timeline "ribbons" on a web-based frontend.
