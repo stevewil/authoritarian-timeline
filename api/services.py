@@ -2,6 +2,7 @@ import gspread
 import os
 from dotenv import load_dotenv
 from datetime import datetime
+import threading
 
 # Load environment variables from .env file
 load_dotenv()
@@ -9,11 +10,27 @@ load_dotenv()
 # It's best practice to load the sheet name from an environment variable
 SHEET_NAME = os.getenv("GOOGLE_SHEET_NAME", "Authoritarian Timeline Data")
 
+# Global cache for the spreadsheet object to avoid reconnecting on every request.
+_spreadsheet_cache = None
+# A lock to ensure that only one thread tries to connect at a time.
+_connection_lock = threading.Lock()
+
 def get_sheet_connection():
     """
     Establishes a connection to the Google Sheet using service account credentials.
+    Uses a thread-safe singleton pattern to ensure the connection is only made once.
     """
-    # Explicitly get the path to the credentials file from the environment variable.
+    global _spreadsheet_cache
+    # Fast path: if the connection is already cached, return it immediately.
+    if _spreadsheet_cache:
+        return _spreadsheet_cache
+
+    # Slow path: acquire the lock to prevent other threads from connecting simultaneously.
+    with _connection_lock:
+        # Double-check if another thread connected while we were waiting for the lock.
+        if _spreadsheet_cache:
+            return _spreadsheet_cache
+
     creds_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 
     # Provide a clear error if the environment variable is not set.
@@ -38,8 +55,9 @@ def get_sheet_connection():
     
     print(f"[{datetime.now()}] DEBUG: Opening spreadsheet by name: '{SHEET_NAME}'...")
     spreadsheet = gc.open(SHEET_NAME)
-    _spreadsheet_cache = spreadsheet # Cache the connection
     print(f"[{datetime.now()}] DEBUG: Spreadsheet opened successfully.")
+
+    _spreadsheet_cache = spreadsheet # Store the connection in the global cache
 
     return spreadsheet
 
