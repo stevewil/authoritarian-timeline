@@ -26,13 +26,16 @@ try:
     gc.http_client.timeout = 15 # Set a 15-second timeout
     print(f"[{datetime.now()}] DEBUG: Authentication successful. Opening spreadsheet...")
 
+    # This step uses the Google Drive API to find the sheet by its title.
     spreadsheet = gc.open(sheet_name)
     print(f"[{datetime.now()}] SUCCESS: Successfully opened spreadsheet '{spreadsheet.title}'")
 
     # 3. Test reading from a worksheet
+    # This step uses the Google Sheets API to access a specific worksheet (tab).
     print(f"[{datetime.now()}] DEBUG: Attempting to open 'LEADERS' worksheet...")
     leaders_sheet = spreadsheet.worksheet("LEADERS")
     print(f"[{datetime.now()}] DEBUG: Successfully opened 'LEADERS' worksheet. Reading first row...")
+    # This step uses the Google Sheets API to read data from the cells.
     first_row = leaders_sheet.row_values(1)
     print(f"[{datetime.now()}] SUCCESS: Read first row: {first_row}")
 
