@@ -1,8 +1,12 @@
 import datetime
+import sys
+import os
 from flask import Flask, jsonify
 
-# We can reuse the excellent service functions you've already written!
-from api import services
+# Add the project root to the Python path to ensure modules are found
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+
+from api import services  # This import will now work reliably
 
 app = Flask(__name__)
 
