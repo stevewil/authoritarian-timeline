@@ -47,8 +47,8 @@ def test_read():
 def get_timelines():
     """Fetches and returns all processed leader and event data."""
     try:
-        timelines_data = get_timelines_data()
-        return jsonify(timelines_data), 200
+        response_data = get_timelines_data()
+        return jsonify(response_data), 200
     except Exception as e:
         # Log the full traceback to the console for detailed debugging
         print("--- AN ERROR OCCURRED ---")

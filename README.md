@@ -179,29 +179,36 @@ The backend exposes a single primary endpoint.
 ### `GET /api/timelines`
 
 - **Description**: Fetches and returns all processed leader and event data.
-- **Success Response (200 OK)**: Returns a JSON array where each object represents a leader and their timeline. The backend calculates `days_from_start` for each event relative to the leader's `DateAssumedPower`.
+- **Success Response (200 OK)**: Returns a JSON object containing the timeline `data` and a `_debug_log` array with processing information. The backend calculates `days_from_start` for each event relative to the leader's `DateAssumedPower`.
 
 ```json
-[
-  {
-    "details": {
-      "LeaderID": "putin_v",
-      "FullName": "Vladimir Putin",
-      "Country": "Russia",
-      "DateAssumedPower": "1999-12-31",
-      "Color": "#DE3163"
-    },
-    "events": [
-      {
-        "EventDate": "2000-03-26",
-        "EventTitle": "First Presidential Election",
-        "days_from_start": 86
+{
+  "data": [
+    {
+      "details": {
+        "LeaderID": "putin_v",
+        "FullName": "Vladimir Putin",
+        "Country": "Russia",
+        "DateAssumedPower": "1999-12-31",
+        "Color": "#DE3163"
       },
-      { "...more events" }
-    ]
-  },
-  { "...more leaders" }
-]
+      "events": [
+        {
+          "EventDate": "2000-03-26",
+          "EventTitle": "First Presidential Election",
+          "days_from_start": 86
+        },
+        { "...more events" }
+      ]
+    },
+    { "...more leaders" }
+  ],
+  "_debug_log": [
+    "Starting timeline data processing.",
+    "Connection to sheet 'Authoritarian Timeline Data' successful.",
+    "Found 2 leaders and 5 events."
+  ]
+}
 ```
 
 ---

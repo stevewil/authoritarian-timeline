@@ -53,34 +53,36 @@ def get_timelines_data():
     Fetches leader and event data from the Google Sheet and processes it
     into the required JSON structure for the API.
     """
-    print("DEBUG: Attempting to connect to Google Sheets...")
+    debug_log = ["Starting timeline data processing."]
+    
+    debug_log.append("Attempting to connect to Google Sheets...")
     spreadsheet = get_sheet_connection()
-    print("DEBUG: Connection successful.")
+    debug_log.append(f"Connection to sheet '{SHEET_NAME}' successful.")
 
     # 1. Fetch all data from both sheets
-    print("DEBUG: Fetching 'Leaders' worksheet...")
+    debug_log.append("Fetching 'Leaders' and 'Events' worksheets.")
     leaders_sheet = spreadsheet.worksheet("Leaders")
-    print("DEBUG: Fetching 'Events' worksheet...")
     events_sheet = spreadsheet.worksheet("Events")
     
-    print("DEBUG: Reading all records from sheets...")
+    debug_log.append("Reading all records from sheets...")
     leaders_data = leaders_sheet.get_all_records() # Returns a list of dicts
     events_data = events_sheet.get_all_records()   # Returns a list of dicts
-    print(f"DEBUG: Found {len(leaders_data)} leaders and {len(events_data)} events.")
+    debug_log.append(f"Found {len(leaders_data)} leaders and {len(events_data)} events.")
     
     # 2. Process events and group them by LeaderID for efficient lookup
     events_by_leader = {}
     for event in events_data:
         leader_id = event.get("LeaderID")
         if not leader_id:
-            continue # Skip events without a leader ID
+            debug_log.append(f"Warning: Skipping an event because it has no LeaderID. Event data: {event}")
+            continue
 
         if leader_id not in events_by_leader:
             events_by_leader[leader_id] = []
         
         events_by_leader[leader_id].append(event)
 
-    print("DEBUG: Starting to build final response structure...")
+    debug_log.append("Starting to build final response structure for each leader.")
     # 3. Build the final response structure
     timelines = []
     for leader in leaders_data:
@@ -94,7 +96,9 @@ def get_timelines_data():
             date_assumed_power = datetime.strptime(date_assumed_power_str, "%Y-%m-%d")
         except (ValueError, TypeError):
             # Skip leader if the date is invalid or missing
-            print(f"Warning: Skipping leader '{leader_id}' due to invalid DateAssumedPower: '{date_assumed_power_str}'")
+            warning_msg = f"Warning: Skipping leader '{leader_id}' due to invalid or missing DateAssumedPower: '{date_assumed_power_str}'"
+            debug_log.append(warning_msg)
+            print(warning_msg) # Also print to server console for visibility
             continue
 
         leader_events = []
@@ -110,7 +114,9 @@ def get_timelines_data():
                     "days_from_start": days_diff
                 })
             except (ValueError, TypeError):
-                print(f"Warning: Skipping event for leader '{leader_id}' due to invalid EventDate: '{event.get('EventDate')}'")
+                warning_msg = f"Warning: Skipping event for leader '{leader_id}' due to invalid or missing EventDate: '{event.get('EventDate')}'"
+                debug_log.append(warning_msg)
+                print(warning_msg) # Also print to server console
                 continue
         
         timelines.append({
@@ -124,5 +130,8 @@ def get_timelines_data():
             "events": sorted(leader_events, key=lambda x: x['days_from_start'])
         })
 
-    print("DEBUG: Finished processing. Returning timelines.")
-    return timelines
+    debug_log.append("Finished processing all leaders.")
+    return {
+        "data": timelines,
+        "_debug_log": debug_log
+    }
