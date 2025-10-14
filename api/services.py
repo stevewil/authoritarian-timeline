@@ -13,10 +13,24 @@ def get_sheet_connection():
     """
     Establishes a connection to the Google Sheet using service account credentials.
     """
-    # The gspread.service_account() function automatically looks for the
-    # GOOGLE_APPLICATION_CREDENTIALS environment variable.
-    # Ensure your .env file sets this to the path of your JSON credentials file.
-    gc = gspread.service_account()
+    # Explicitly get the path to the credentials file from the environment variable.
+    creds_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+
+    # Provide a clear error if the environment variable is not set.
+    if not creds_path:
+        raise ValueError(
+            "The GOOGLE_APPLICATION_CREDENTIALS environment variable is not set. "
+            "Please check your .env file and ensure it points to your JSON credentials file."
+        )
+
+    # Provide a clear error if the file path itself is wrong.
+    if not os.path.exists(creds_path):
+        raise FileNotFoundError(
+            f"The credentials file was not found at the path specified by "
+            f"GOOGLE_APPLICATION_CREDENTIALS: {creds_path}"
+        )
+
+    gc = gspread.service_account(filename=creds_path)
     spreadsheet = gc.open(SHEET_NAME)
     return spreadsheet
 
