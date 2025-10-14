@@ -1,6 +1,6 @@
-import datetime
 import sys
 import os
+from datetime import datetime
 from flask import Flask, jsonify
 import traceback
 
@@ -22,7 +22,7 @@ def test_write():
     try:
         # Defer connection until the request is made
         spreadsheet = get_sheet_connection()
-        timestamp = f"Flask write successful at: {datetime.datetime.utcnow().isoformat()}"
+        timestamp = f"Flask write successful at: {datetime.utcnow().isoformat()}"
         # Pass the connection to the service function
         test_sheet_write(spreadsheet, timestamp)
         return jsonify({

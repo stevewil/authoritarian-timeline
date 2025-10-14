@@ -7,7 +7,14 @@ from datetime import datetime
 load_dotenv()
 
 # It's best practice to load the sheet name from an environment variable
-SHEET_NAME = os.getenv("GOOGLE_SHEET_NAME", "Authoritarian Timeline Data")
+SHEET_NAME = os.getenv("GOOGLE_SHEET_NAME")
+
+# Add validation to ensure the environment variable is set.
+if not SHEET_NAME:
+    raise ValueError(
+        "The GOOGLE_SHEET_NAME environment variable is not set in your .env file. "
+        "Please set it to the exact name of your Google Sheet."
+    )
 
 def get_sheet_connection():
     """
