@@ -7,7 +7,7 @@ import traceback
 # Add the project root to the Python path to ensure modules are found
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
-from api.services import get_sheet_connection, test_sheet_write, test_sheet_read, get_timelines_data
+from api.services import get_sheet_connection, test_sheet_write, test_sheet_read, test_leaders_read, get_timelines_data
 
 app = Flask(__name__)
 
@@ -52,6 +52,24 @@ def test_read():
         traceback.print_exc()
         print("-------------------------------")
         return jsonify({"status": "error", "message": "An internal error occurred during test read."}), 500
+
+@app.route("/api/test-leaders-read", methods=['GET'])
+def test_leaders():
+    """
+    A test endpoint to read and display the first 5 rows from the 'Leaders' sheet.
+    """
+    try:
+        spreadsheet = get_sheet_connection()
+        first_five_rows = test_leaders_read(spreadsheet)
+        print("--- First 5 Leader Rows ---")
+        print(first_five_rows)
+        print("---------------------------")
+        return jsonify(first_five_rows), 200
+    except Exception as e:
+        print(f"--- ERROR IN /api/test-leaders-read ---")
+        traceback.print_exc()
+        print("---------------------------------------")
+        return jsonify({"status": "error", "message": "An internal error occurred while reading the Leaders sheet."}), 500
 
 @app.route("/api/timelines", methods=['GET'])
 def get_timelines():

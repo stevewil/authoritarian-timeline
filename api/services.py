@@ -55,6 +55,15 @@ def test_sheet_read(spreadsheet: gspread.Spreadsheet) -> str:
     test_worksheet = spreadsheet.worksheet("Test")
     return test_worksheet.acell("A1").value
 
+def test_leaders_read(spreadsheet: gspread.Spreadsheet):
+    """
+    Reads and returns the first five records from the 'Leaders' worksheet.
+    """
+    print(f"[{datetime.now()}] DEBUG: Fetching 'Leaders' worksheet for test read...")
+    leaders_sheet = spreadsheet.worksheet("Leaders")
+    # get_all_records() fetches all rows; we slice the first 5 records from the result.
+    return leaders_sheet.get_all_records()[:5]
+
 def get_timelines_data(spreadsheet: gspread.Spreadsheet):
     """
     Fetches leader and event data from the Google Sheet and processes it
