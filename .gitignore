@@ -15,7 +15,7 @@ venv/
 
 # Google Cloud Service Account credentials
 # This file contains secrets and should never be committed.
-authoritarian-timeline-557dd7207e46.json
+credentials.json
 
 # OS-specific files
 .DS_Store
