@@ -2,7 +2,6 @@ import gspread
 import os
 from dotenv import load_dotenv
 from datetime import datetime
-import threading
 
 # Load environment variables from .env file
 load_dotenv()
@@ -10,27 +9,11 @@ load_dotenv()
 # It's best practice to load the sheet name from an environment variable
 SHEET_NAME = os.getenv("GOOGLE_SHEET_NAME", "Authoritarian Timeline Data")
 
-# Global cache for the spreadsheet object to avoid reconnecting on every request.
-_spreadsheet_cache = None
-# A lock to ensure that only one thread tries to connect at a time.
-_connection_lock = threading.Lock()
-
 def get_sheet_connection():
     """
     Establishes a connection to the Google Sheet using service account credentials.
-    Uses a thread-safe singleton pattern to ensure the connection is only made once.
     """
-    global _spreadsheet_cache
-    # Fast path: if the connection is already cached, return it immediately.
-    if _spreadsheet_cache:
-        return _spreadsheet_cache
-
-    # Slow path: acquire the lock to prevent other threads from connecting simultaneously.
-    with _connection_lock:
-        # Double-check if another thread connected while we were waiting for the lock.
-        if _spreadsheet_cache:
-            return _spreadsheet_cache
-
+    # Explicitly get the path to the credentials file from the environment variable.
     creds_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 
     # Provide a clear error if the environment variable is not set.
@@ -56,9 +39,6 @@ def get_sheet_connection():
     print(f"[{datetime.now()}] DEBUG: Opening spreadsheet by name: '{SHEET_NAME}'...")
     spreadsheet = gc.open(SHEET_NAME)
     print(f"[{datetime.now()}] DEBUG: Spreadsheet opened successfully.")
-
-    _spreadsheet_cache = spreadsheet # Store the connection in the global cache
-
     return spreadsheet
 
 def test_sheet_write(spreadsheet: gspread.Spreadsheet, value: str):
@@ -77,14 +57,18 @@ def test_sheet_read(spreadsheet: gspread.Spreadsheet) -> str:
 
 def test_leaders_read(spreadsheet: gspread.Spreadsheet):
     """
-    Reads and returns the first five records from the 'Leaders' worksheet.
+    Reads and returns the first five records from the 'Leaders' worksheet,
+    with extensive debugging logs.
     """
-    print(f"[{datetime.now()}] DEBUG: Fetching 'Leaders' worksheet for test read...")
-    leaders_sheet = spreadsheet.worksheet("Leaders") # This is a network request
-    print(f"[{datetime.now()}] DEBUG: 'Leaders' worksheet fetched. Now reading records...")
-    # get_all_records() fetches all rows; we slice the first 5 records from the result.
-    records = leaders_sheet.get_all_records()[:5] # This is a network request
-    print(f"[{datetime.now()}] DEBUG: Successfully read {len(records)} records from 'Leaders' sheet.")
+    print(f"[{datetime.now()}] DEBUG [Service]: Fetching 'Leaders' worksheet...")
+    # This is a network request to find the worksheet by name.
+    leaders_sheet = spreadsheet.worksheet("Leaders")
+    print(f"[{datetime.now()}] DEBUG [Service]: 'Leaders' worksheet object obtained successfully.")
+    
+    print(f"[{datetime.now()}] DEBUG [Service]: Reading all records from 'Leaders' sheet...")
+    # This is a network request to get all cell values and parse them.
+    records = leaders_sheet.get_all_records()[:5] # We slice the first 5 records.
+    print(f"[{datetime.now()}] DEBUG [Service]: Successfully read {len(records)} records.")
     return records
 
 def get_timelines_data(spreadsheet: gspread.Spreadsheet):

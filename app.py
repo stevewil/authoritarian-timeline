@@ -58,12 +58,17 @@ def test_leaders():
     """
     A test endpoint to read and display the first 5 rows from the 'Leaders' sheet.
     """
+    print("\n--- [test-leaders-read] Request Received ---")
     try:
+        print(f"[{datetime.now()}] DEBUG [Route]: Attempting to get sheet connection...")
         spreadsheet = get_sheet_connection()
+        print(f"[{datetime.now()}] DEBUG [Route]: Sheet connection obtained. Calling service function...")
         first_five_rows = test_leaders_read(spreadsheet)
-        print("--- First 5 Leader Rows ---")
-        print(first_five_rows)
-        print("---------------------------")
+        print(f"[{datetime.now()}] DEBUG [Route]: Service function returned successfully.")
+        print("\n--- First 5 Leader Rows (Console Output) ---")
+        import json
+        print(json.dumps(first_five_rows, indent=2)) # Pretty print for readability
+        print("------------------------------------------\n")
         return jsonify(first_five_rows), 200
     except Exception as e:
         print(f"--- ERROR IN /api/test-leaders-read ---")
