@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from . import services
+from . import services  # Use relative import
 import datetime
 
 app = FastAPI()
@@ -22,3 +22,16 @@ def test_google_sheet_write():
     except Exception as e:
         # Raise an HTTP exception to provide a clear error response in the API
         raise HTTPException(status_code=500, detail=f"Failed to write to Google Sheet: {str(e)}")
+
+@app.get("/api/test-read", status_code=200)
+def test_google_sheet_read():
+    """
+    A test endpoint to confirm read permissions from the Google Sheet.
+    It reads the value from cell A1 of the 'Test' worksheet.
+    """
+    try:
+        spreadsheet = services.get_sheet_connection()
+        value = services.test_sheet_read(spreadsheet)
+        return {"status": "success", "message": f"Successfully read from sheet. Value in A1: '{value}'"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to read from Google Sheet: {str(e)}")

@@ -26,3 +26,8 @@ def test_sheet_write(spreadsheet: gspread.Spreadsheet, value: str):
     """Writes a value to cell A1 of a sheet named 'Test'."""
     test_sheet = spreadsheet.worksheet("Test")
     test_sheet.update_acell("A1", value)
+
+def test_sheet_read(spreadsheet: gspread.Spreadsheet):
+    """Reads a value from cell A1 of a sheet named 'Test'."""
+    test_sheet = spreadsheet.worksheet("Test")
+    return test_sheet.acell("A1").value
