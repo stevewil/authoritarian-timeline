@@ -6,7 +6,7 @@ from flask import Flask, jsonify
 # Add the project root to the Python path to ensure modules are found
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
-from api.services import get_sheet_connection, test_sheet_write, test_sheet_read
+from api.services import get_sheet_connection, test_sheet_write, test_sheet_read, get_timelines_data
 
 app = Flask(__name__)
 
@@ -41,6 +41,17 @@ def test_read():
         }), 200
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
+
+@app.route("/api/timelines", methods=['GET'])
+def get_timelines():
+    """Fetches and returns all processed leader and event data."""
+    try:
+        timelines_data = get_timelines_data()
+        return jsonify(timelines_data), 200
+    except Exception as e:
+        # Log the full error for debugging on the server
+        print(f"ERROR fetching timelines: {e}")
+        return jsonify({"status": "error", "message": "An internal error occurred while fetching timeline data."}), 500
 
 if __name__ == '__main__':
     # To run for local development: `python flask_test.py`
