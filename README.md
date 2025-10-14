@@ -27,13 +27,13 @@ The application consists of three main parts:
 
 1.  **Data Source**: A Google Sheet acts as a simple, collaborative database to store information about leaders and the key events in their timelines.
 2.  **Backend API**: A Python application built with **FastAPI** reads data from the Google Sheet, processes it into a structured JSON format, and serves it via a REST API.
-3.  **Frontend Client**: A static web page (HTML, CSS, JavaScript) that fetches data from the backend API and uses a visualization library to render the interactive timelines.
+3.  **Backend API**: A Python application built with **Flask** reads data from the Google Sheet, processes it into a structured JSON format, and serves it via a REST API.
+4.  **Frontend Client**: A static web page (HTML, CSS, JavaScript) that fetches data from the backend API and uses a visualization library to render the interactive timelines.
 
 ## Technology Stack
 
 | Component      | Technology                                                                                             |
 | -------------- | ------------------------------------------------------------------------------------------------------ |
-| **Backend**      | [Python 3.9+](https://www.python.org/), [FastAPI](https://fastapi.tiangolo.com/)                        |
 | **Backend**      | [Python 3.9+](https://www.python.org/), [Flask](https://flask.palletsprojects.com/)                     |
 | **Data Access**  | [GSpread](https://docs.gspread.org/en/latest/) (for Google Sheets API)                                   |
 | **Web Server**   | [Flask Development Server](https://flask.palletsprojects.com/en/2.0.x/server/) / [Gunicorn](https://gunicorn.org/) (for production) |
@@ -160,7 +160,7 @@ cp .env.example .env
 
 ### 4. Running the Backend Server
 
-The Flask application is in `app.py` (or `flask_test.py`). Run it directly with Python:
+The Flask application is in `app.py`. Run it directly with Python:
 
 ```bash
 # This command runs the Flask development server.
