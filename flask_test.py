@@ -6,7 +6,14 @@ from flask import Flask, jsonify
 # Add the project root to the Python path to ensure modules are found
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
+print("--- DEBUGGING IMPORTS ---")
+print(f"Current Working Directory: {os.getcwd()}")
+print("Is 'api/services.py' file present? "
+      f"{os.path.isfile(os.path.join(os.path.dirname(__file__), 'api', 'services.py'))}")
+print(f"Complete sys.path: {sys.path}")
+print("--- ATTEMPTING IMPORT ---")
 from api.services import get_sheet_connection, test_sheet_write, test_sheet_read
+print("--- IMPORT SUCCESSFUL ---")
 
 app = Flask(__name__)
 
