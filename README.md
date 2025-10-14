@@ -24,9 +24,8 @@ The core concept is to normalize each leader's timeline to a "zero point"—the 
 ## Project Overview
 
 The application consists of three main parts:
-
 1.  **Data Source**: A Google Sheet acts as a simple, collaborative database to store information about leaders and the key events in their timelines.
-2.  **Backend API**: A Python application built with **FastAPI** reads data from the Google Sheet, processes it into a structured JSON format, and serves it via a REST API.
+2.  **Backend API**: A Python application built with **Flask** reads data from the Google Sheet, processes it into a structured JSON format, and serves it via a REST API.
 3.  **Frontend Client**: A static web page (HTML, CSS, JavaScript) that fetches data from the backend API and uses a visualization library to render the interactive timelines.
 
 ## Technology Stack
