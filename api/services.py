@@ -38,7 +38,9 @@ def get_sheet_connection():
     
     print(f"[{datetime.now()}] DEBUG: Opening spreadsheet by name: '{SHEET_NAME}'...")
     spreadsheet = gc.open(SHEET_NAME)
+    _spreadsheet_cache = spreadsheet # Cache the connection
     print(f"[{datetime.now()}] DEBUG: Spreadsheet opened successfully.")
+
     return spreadsheet
 
 def test_sheet_write(spreadsheet: gspread.Spreadsheet, value: str):
